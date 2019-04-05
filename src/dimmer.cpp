@@ -1,7 +1,7 @@
 #include "dimmer.hpp"
 
 PwmOut Leds[]={(PD_13),(PD_15),(PA_9)};
-Timeout contador;
+Timeout contador,pisca;
 InterruptIn botao(PA_0);
 bool direcao=0;//0=DOWN; 1=UP
 
@@ -21,7 +21,8 @@ void mudar_intensidade(){
     botao.fall(NULL);
     if(direcao==1){//Aumentar 5% do valor max. a cada segundo
         if(Leds[2]<1.0){
-            Leds[2] = Leds[2]+0.05; 
+            Leds[2] = Leds[2]+0.05;
+            rise_blue();
         }
         if(Leds[2]>=1.0){
             blinky_blue();
@@ -29,7 +30,8 @@ void mudar_intensidade(){
     }
     if(direcao==0){//Diminuir na mesma passada que acima
         if(Leds[2]>0.0){
-            Leds[2] = Leds[2]-0.05; 
+            Leds[2] = Leds[2]-0.05;
+            fall_orange();
         }
         if(Leds[2]<=0.0){
             blinky_orange();
@@ -37,13 +39,34 @@ void mudar_intensidade(){
     }
     contador.attach(&mudar_intensidade, 1);
 }
+void rise_blue(){
+    if(Led[1]==1){
+        Led[1]=0;
+        piscar.attach(&rise_blue, 0.2);
+    }
+    else{
+        Led[1]=1;
+    }
+}
+
+void fall_orange(){
+    if(Led[0]==1){
+        Led[0]=0;
+        piscar.attach(&fall_orange, 0.2);
+    }
+    else{
+        Led[0]=1;
+    }
+}
 
 void blinky_blue(){
     Leds[1] = !Leds[1];
     contador.attach(&blinky_blue, 0.1);
+    botao.fall(&mudar_sentido);
 }
 
 void blinky_orange(){
     Leds[0] = !Leds[0];
     contador.attach(&blinky_orange, 0.1);
+    botao.fall(&mudar_sentido);
 }

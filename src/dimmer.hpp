@@ -9,5 +9,8 @@ void mudar_sentido();
 void mudar_intensidade();
 void blinky_blue();
 void blinky_orange();
+void stop_blink();
+void rise_blue();
+void fall_orange();
 
 #endif
